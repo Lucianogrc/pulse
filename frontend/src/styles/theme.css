@@ -1,0 +1,201 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+
+  /* MAIN COLORS */
+
+  --background: #fafafa;
+  --foreground: #121212;
+
+  --card: #fcfcf9;
+  --card-foreground: #181818;
+
+  --popover: #ffffff;
+  --popover-foreground: #181818;
+
+  --primary: #121212;
+  --primary-foreground: #ffffff;
+
+  /* SOFT UI COLORS */
+
+  --secondary: #ebe8df;
+  --secondary-foreground: #181818;
+
+  --muted: #efede7;
+  --muted-foreground: #6b6b6b;
+
+  /* BRAND COLORS */
+
+  --accent: #d9ff3f;
+  --accent-foreground: #121212;
+
+  --lime: #cfff38;
+  --yellow-green: #e8ff7a;
+
+  /* SUPPORT COLORS */
+
+  --warm-beige: #e6d7c3;
+  --lavender: #d8d1f1;
+  --cream: #faf8f2;
+  --gray-blue: #c9d2dc;
+
+  /* STATUS */
+
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+
+  /* BORDERS */
+
+  --border: rgba(18, 18, 18, 0.08);
+
+  --input: transparent;
+  --input-background: #f0eee8;
+
+  --switch-background: #d5d5d5;
+
+  /* TYPOGRAPHY */
+
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+
+  /* EFFECTS */
+
+  --ring: #d9ff3f;
+
+  /* CHARTS */
+
+  --chart-1: #d9ff3f;
+  --chart-2: #cfff38;
+  --chart-3: #d8d1f1;
+  --chart-4: #c9d2dc;
+  --chart-5: #e6d7c3;
+
+  /* RADIUS */
+
+  --radius: 1.5rem;
+
+  /* SIDEBAR */
+
+  --sidebar: #f8f6f1;
+  --sidebar-foreground: #181818;
+
+  --sidebar-primary: #121212;
+  --sidebar-primary-foreground: #ffffff;
+
+  --sidebar-accent: #ece8de;
+  --sidebar-accent-foreground: #181818;
+
+  --sidebar-border: rgba(18, 18, 18, 0.08);
+
+  --sidebar-ring: #d9ff3f;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-lime: var(--lime);
+  --color-yellow-green: var(--yellow-green);
+  --color-warm-beige: var(--warm-beige);
+  --color-lavender: var(--lavender);
+  --color-cream: var(--cream);
+  --color-gray-blue: var(--gray-blue);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  /**
+  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
+  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
+  */
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+}

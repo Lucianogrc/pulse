@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "country": "England",
+    "city": "London",
+    "category": "Racism",
+    "incidents": 1247,
+    "severity": "High",
+    "description": "Discriminatory chants reported during match."
+  },
+  {
+    "id": 2,
+    "country": "Spain",
+    "city": "Madrid",
+    "category": "Homophobia",
+    "incidents": 892,
+    "severity": "Medium",
+    "description": "Offensive banners displayed by fans."
+  }
+]
