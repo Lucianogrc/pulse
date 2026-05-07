@@ -1,5 +1,5 @@
 const API_URL =
-  "https://opensheet.elk.sh/1XrOpxyd38oz6w6MFEItgTNE_mYfw5LmGRo-8yYewuP4/Sheet1";
+  "https://opensheet.elk.sh/1XrOpxyd38oz6w6MFEItgTNE_mYfw5LmGRo-8yYewuP4/1";
 
 export async function getIncidents() {
 
