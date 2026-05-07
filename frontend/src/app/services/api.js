@@ -1,16 +1,9 @@
-const SHEET_ID =
-  "2PACX-1vQ6zPOJF2TuosYH7pgSF2CIFQ6hUTdtq4Q6YS6dhfYI0TTep-ZwwGkn8PleOLVlS9LVEsx5tVzh0TF_";
-
-const SHEET_NAME = "Sheet1";
-
-const SHEET_API = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
-
-const WEBHOOK_URL =
-  "https://lucianogrc.app.n8n.cloud/webhook/pulse-report";
+const API_URL =
+  "https://opensheet.elk.sh/1XrOpxyd38oz6w6MFEItgTNE_mYfw5LmGRo-8yYewuP4/Sheet1";
 
 export async function getIncidents() {
 
-  const response = await fetch(SHEET_API);
+  const response = await fetch(API_URL);
 
   const data = await response.json();
 
@@ -23,13 +16,16 @@ export async function getIncidents() {
 
 export async function createIncident(data) {
 
-  const response = await fetch(WEBHOOK_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+  const response = await fetch(
+    "https://lucianogrc.app.n8n.cloud/webhook/pulse-report",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }
+  );
 
   return response.json();
 
