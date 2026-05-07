@@ -21,8 +21,8 @@ export default function ChordDiagram() {
       data.forEach((item) => {
 
         links.push({
-          source: item.country,
-          target: item.category,
+          source: item.Country,
+          target: item.Category,
           value: Number(item.incidents || 1),
         });
 

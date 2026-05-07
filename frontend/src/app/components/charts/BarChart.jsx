@@ -35,7 +35,7 @@ export default function CustomBarChart() {
 
       incidents.forEach((item) => {
 
-        const country = item.country;
+        const country = item.Country;
 
         if (!groupedCountries[country]) {
           groupedCountries[country] = 0;

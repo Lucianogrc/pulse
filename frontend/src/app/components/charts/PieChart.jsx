@@ -26,11 +26,11 @@ export default function CustomPieChart() {
       const grouped = {};
 
       incidents.forEach((item) => {
-        if (!grouped[item.category]) {
-          grouped[item.category] = 0;
+        if (!grouped[item.Category]) {
+          grouped[item.Category] = 0;
         }
 
-        grouped[item.category] += Number(item.incidents);
+        grouped[item.Category] += Number(item.incidents);
       });
 
       const formatted = Object.keys(grouped).map((key) => ({

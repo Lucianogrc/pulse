@@ -7,9 +7,25 @@ export async function getIncidents() {
 
   const data = await response.json();
 
+  // FORMAT GOOGLE SHEETS DATA
   return data.map((item) => ({
-    ...item,
-    incidents: Number(item.incidents || 1),
+
+    Date: item.Date || "",
+
+    Match: item.Match || "",
+
+    Country: item.Country || "",
+
+    Category: item.Category || "",
+
+    Severity: item.Severity || "",
+
+    Description: item.Description || "",
+
+    Name: item.Name || "",
+
+    Email: item.Email || "",
+
   }));
 
 }
