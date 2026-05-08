@@ -14,10 +14,11 @@ import {
 
 const COLORS = [
   "#D9F154",
-  "#3fb5d6",
-  "#e477b5",
-  "#f2a335",
-  "#8b5cf6",
+  "#DDE58B",
+  "#CFC9E8",
+  "#F2D6C9",
+  "#B8E3EA",
+  "#E9E4D8",
 ];
 
 export default function CustomBarChart() {
@@ -37,13 +38,14 @@ export default function CustomBarChart() {
 
         const country = item.Country;
 
+        if (!country) return;
+
         if (!groupedCountries[country]) {
           groupedCountries[country] = 0;
         }
 
-        groupedCountries[country] += Number(
-          item.incidents || 1
-        );
+        // EACH ROW = 1 INCIDENT
+        groupedCountries[country] += 1;
 
       });
 
@@ -74,7 +76,7 @@ export default function CustomBarChart() {
 
       <div className="mb-12">
 
-        <p className="text-lime-500 text-sm font-semibold uppercase tracking-wider">
+        <p className="text-[#9ACD32] text-sm font-semibold uppercase tracking-wider">
           Analytics
         </p>
 
@@ -93,28 +95,35 @@ export default function CustomBarChart() {
             <CartesianGrid
               strokeDasharray="3 3"
               vertical={false}
-              stroke="#e5e5e5"
+              stroke="#ecece8"
             />
 
             <XAxis
               dataKey="country"
-              tick={{ fill: "#666", fontSize: 14 }}
+              tick={{
+                fill: "#666",
+                fontSize: 14,
+              }}
             />
 
             <YAxis
-              tick={{ fill: "#666", fontSize: 14 }}
+              tick={{
+                fill: "#666",
+                fontSize: 14,
+              }}
             />
 
             <Tooltip
               contentStyle={{
-                borderRadius: "18px",
-                border: "1px solid #ececec",
+                borderRadius: "20px",
+                border: "1px solid #ecece8",
+                background: "#fff",
               }}
             />
 
             <Bar
               dataKey="incidents"
-              radius={[12, 12, 0, 0]}
+              radius={[16, 16, 0, 0]}
             >
 
               {data.map((entry, index) => (
@@ -139,4 +148,5 @@ export default function CustomBarChart() {
     </section>
 
   );
+
 }

@@ -20,10 +20,16 @@ export default function ChordDiagram() {
 
       data.forEach((item) => {
 
+        const country = item.Country;
+        const category = item.Category;
+
+        // SKIP EMPTY VALUES
+        if (!country || !category) return;
+
         links.push({
-          source: item.Country,
-          target: item.Category,
-          value: Number(item.incidents || 1),
+          source: country,
+          target: category,
+          value: 1,
         });
 
       });
@@ -51,19 +57,19 @@ export default function ChordDiagram() {
 
       // SIZE
 
-      const width = 850;
-      const height = 850;
+      const width = 950;
+      const height = 950;
 
       const outerRadius =
-        Math.min(width, height) * 0.5 - 60;
+        Math.min(width, height) * 0.5 - 90;
 
-      const innerRadius = outerRadius - 30;
+      const innerRadius = outerRadius - 28;
 
       // CHORD
 
       const chord = d3
         .chordDirected()
-        .padAngle(0.03)
+        .padAngle(0.04)
         .sortSubgroups(d3.descending)
         .sortChords(d3.descending);
 
@@ -73,11 +79,11 @@ export default function ChordDiagram() {
 
       const colors = [
         "#D9F154",
-        "#3fb5d6",
-        "#e477b5",
-        "#f2a335",
-        "#9b87f5",
-        "#56c596",
+        "#DDE59A",
+        "#CFCBEA",
+        "#E7DCCF",
+        "#C6D9F1",
+        "#E6C7D9",
       ];
 
       const color = d3.scaleOrdinal()
@@ -89,9 +95,15 @@ export default function ChordDiagram() {
       const svg = d3
         .select(ref.current)
         .append("svg")
-        .attr("viewBox", [-width / 2, -height / 2, width, height])
+        .attr(
+          "viewBox",
+          [-width / 2, -height / 2, width, height]
+        )
         .style("width", "100%")
-        .style("height", "100%");
+        .style("max-width", "900px")
+        .style("height", "auto")
+        .style("display", "block")
+        .style("margin", "0 auto");
 
       // ARCS
 
@@ -102,7 +114,7 @@ export default function ChordDiagram() {
       // RIBBONS
 
       const ribbon = d3.ribbonArrow()
-        .radius(innerRadius)
+        .radius(innerRadius - 2)
         .padAngle(0.01);
 
       // GROUPS
@@ -117,6 +129,7 @@ export default function ChordDiagram() {
         .append("path")
         .attr("fill", (d) => color(names[d.index]))
         .attr("stroke", "#ffffff")
+        .attr("stroke-width", 2)
         .attr("d", arc);
 
       // LABELS
@@ -132,16 +145,18 @@ export default function ChordDiagram() {
           "transform",
           (d) => `
             rotate(${(d.angle * 180) / Math.PI - 90})
-            translate(${outerRadius + 18})
+            translate(${outerRadius + 22})
             ${d.angle > Math.PI ? "rotate(180)" : ""}
           `
         )
-        .style("font-size", "14px")
-        .style("font-weight", "600")
+        .style("font-size", "15px")
+        .style("font-weight", "700")
         .style("fill", "#111")
         .attr(
           "text-anchor",
-          (d) => (d.angle > Math.PI ? "end" : "start")
+          (d) => (
+            d.angle > Math.PI ? "end" : "start"
+          )
         )
         .text((d) => names[d.index]);
 
@@ -149,13 +164,14 @@ export default function ChordDiagram() {
 
       svg
         .append("g")
-        .attr("fill-opacity", 0.75)
+        .attr("fill-opacity", 0.78)
         .selectAll("path")
         .data(chords)
         .join("path")
         .attr("d", ribbon)
-        .attr("fill", (d) =>
-          color(names[d.target.index])
+        .attr(
+          "fill",
+          (d) => color(names[d.target.index])
         )
         .style("mix-blend-mode", "multiply")
         .append("title")
@@ -176,7 +192,7 @@ export default function ChordDiagram() {
 
       <div className="mb-14">
 
-        <span className="bg-[#D9F75A] text-black px-5 py-2 rounded-full text-sm font-medium">
+        <span className="bg-[#D9F154] text-black px-5 py-2 rounded-full text-sm font-medium">
           D3.js Visualization
         </span>
 

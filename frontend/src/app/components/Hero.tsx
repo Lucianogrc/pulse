@@ -28,23 +28,21 @@ export default function Hero() {
 
   // TOTAL INCIDENTS
 
-  const totalIncidents = incidents.reduce(
-    (acc, item) =>
-      acc + Number(item.incidents || 0),
-    0
-  );
+  const totalIncidents = incidents.length;
 
   // UNIQUE COUNTRIES
 
   const totalCountries = new Set(
-    incidents.map((item) => item.country)
+    incidents
+      .map((item) => item.Country)
+      .filter(Boolean)
   ).size;
 
   // HIGH SEVERITY
 
   const highSeverity = incidents.filter(
     (item) =>
-      item.severity?.toLowerCase() === "high"
+      item.Severity?.toLowerCase() === "high"
   ).length;
 
   return (
@@ -194,7 +192,7 @@ export default function Hero() {
 
             </div>
 
-            {/* IMAGE CONTAINER */}
+            {/* IMAGE */}
 
             <div className="relative rounded-[32px] overflow-hidden h-[520px]">
 
@@ -204,11 +202,7 @@ export default function Hero() {
                 className="w-full h-full object-cover"
               />
 
-              {/* DARK OVERLAY */}
-
               <div className="absolute inset-0 bg-black/25" />
-
-              
 
             </div>
 

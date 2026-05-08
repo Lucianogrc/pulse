@@ -3,75 +3,108 @@ import {
   TileLayer,
   CircleMarker,
   Popup,
-} from 'react-leaflet';
+} from "react-leaflet";
 
-import 'leaflet/dist/leaflet.css';
+import "leaflet/dist/leaflet.css";
 
-const incidents = [
-  {
-    id: 1,
-    region: 'Western Europe',
-    country: 'England',
-    city: 'London',
-    position: [51.5072, -0.1276],
-    incidents: 1247,
-    category: 'Racism',
-    color: '#D9F75A',
-  },
-  {
-    id: 2,
-    region: 'Southern Europe',
-    country: 'Spain',
-    city: 'Madrid',
-    position: [40.4168, -3.7038],
-    incidents: 892,
-    category: 'Homophobia',
-    color: '#C9D94A',
-  },
-  {
-    id: 3,
-    region: 'Eastern Europe',
-    country: 'Poland',
-    city: 'Warsaw',
-    position: [52.2297, 21.0122],
-    incidents: 456,
-    category: 'Xenophobia',
-    color: '#C8C7F7',
-  },
-  {
-    id: 4,
-    region: 'South America',
-    country: 'Brazil',
-    city: 'Rio de Janeiro',
-    position: [-22.9068, -43.1729],
-    incidents: 234,
-    category: 'Sexism',
-    color: '#D6C5B4',
-  },
-  {
-    id: 5,
-    region: 'North America',
-    country: 'USA',
-    city: 'New York',
-    position: [40.7128, -74.0060],
-    incidents: 123,
-    category: 'Racism',
-    color: '#B7C0D8',
-  },
+import { useEffect, useState } from "react";
+
+import { getIncidents } from "../services/api.js";
+
+const countryCoordinates = {
+  Mexico: [23.6345, -102.5528],
+  Spain: [40.4637, -3.7492],
+  Brazil: [-14.235, -51.9253],
+  Argentina: [-38.4161, -63.6167],
+  England: [52.3555, -1.1743],
+  France: [46.2276, 2.2137],
+  Germany: [51.1657, 10.4515],
+  Italy: [41.8719, 12.5674],
+  USA: [37.0902, -95.7129],
+  Poland: [51.9194, 19.1451],
+  Japan: [36.2048, 138.2529],
+  "South Korea": [35.9078, 127.7669],
+};
+
+const COLORS = [
+  "#D9F154",
+  "#DDE59A",
+  "#CFCBEA",
+  "#E7DCCF",
+  "#C6D9F1",
+  "#E6C7D9",
 ];
 
 export default function InteractiveMap() {
+
+  const [incidents, setIncidents] = useState([]);
+
+  useEffect(() => {
+
+    async function loadData() {
+
+      const data = await getIncidents();
+
+      // GROUP BY COUNTRY
+      const grouped = {};
+
+      data.forEach((item) => {
+
+        const country = item.Country;
+        const category = item.Category;
+
+        if (!country) return;
+
+        if (!grouped[country]) {
+
+          grouped[country] = {
+            country,
+            category,
+            incidents: 0,
+          };
+
+        }
+
+        grouped[country].incidents += 1;
+
+      });
+
+      const formatted = Object.values(grouped)
+        .map((item, index) => ({
+
+          ...item,
+
+          position:
+            countryCoordinates[item.country] ||
+            [20, 0],
+
+          color:
+            COLORS[index % COLORS.length],
+
+        }));
+
+      setIncidents(formatted);
+
+    }
+
+    loadData();
+
+  }, []);
+
   return (
+
     <section
       id="analytics"
       className="py-32 px-6 max-w-[1400px] mx-auto"
     >
+
       <div className="space-y-16">
 
-        {/* Header */}
+        {/* HEADER */}
+
         <div className="text-center space-y-5">
 
-          <span className="inline-block bg-[#D9F75A] text-black px-6 py-2 rounded-full text-sm font-medium">
+          <span className="inline-block bg-[#D9F154] text-black px-6 py-2 rounded-full text-sm font-medium">
             Global Monitoring
           </span>
 
@@ -80,62 +113,44 @@ export default function InteractiveMap() {
           </h2>
 
           <p className="text-xl text-[#666] max-w-2xl mx-auto">
-            Interactive visualization of discrimination incidents
-            across football communities worldwide.
+            Interactive visualization of discrimination
+            incidents across football communities worldwide.
           </p>
 
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-wrap justify-center gap-4">
-
-          <button className="px-6 py-3 bg-black text-white rounded-full transition hover:scale-105">
-            All Categories
-          </button>
-
-          <button className="px-6 py-3 bg-white border border-[#e5e5e5] rounded-full hover:bg-[#f5f5f5] transition">
-            Racism
-          </button>
-
-          <button className="px-6 py-3 bg-white border border-[#e5e5e5] rounded-full hover:bg-[#f5f5f5] transition">
-            Homophobia
-          </button>
-
-          <button className="px-6 py-3 bg-white border border-[#e5e5e5] rounded-full hover:bg-[#f5f5f5] transition">
-            Sexism
-          </button>
-
-          <button className="px-6 py-3 bg-white border border-[#e5e5e5] rounded-full hover:bg-[#f5f5f5] transition">
-            Xenophobia
-          </button>
-
-        </div>
-
         {/* MAP */}
+
         <div className="bg-white rounded-[3rem] border border-[#ececec] shadow-xl overflow-hidden p-8">
 
           <MapContainer
-            center={[30, 10]}
+            center={[20, 0]}
             zoom={2}
             scrollWheelZoom={true}
             className="h-[700px] w-full rounded-[2rem] z-0"
           >
 
             <TileLayer
-              attribution='&copy; OpenStreetMap contributors'
+              attribution="&copy; OpenStreetMap contributors"
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
-            {incidents.map((incident) => (
+            {incidents.map((incident, index) => (
+
               <CircleMarker
-                key={incident.id}
+                key={index}
                 center={incident.position}
-                radius={16}
+                radius={
+                  Math.min(
+                    12 + incident.incidents * 1.5,
+                    35
+                  )
+                }
                 pathOptions={{
                   color: incident.color,
                   fillColor: incident.color,
-                  fillOpacity: 0.9,
-                  weight: 5,
+                  fillOpacity: 0.85,
+                  weight: 4,
                 }}
               >
 
@@ -150,35 +165,24 @@ export default function InteractiveMap() {
                       }}
                     />
 
-                    <h3 className="text-xl font-bold">
-                      {incident.city}
+                    <h3 className="text-2xl font-bold">
+                      {incident.country}
                     </h3>
 
-                    <p className="text-sm text-gray-500 mb-4">
-                      {incident.country}
-                    </p>
-
-                    <div className="space-y-2">
+                    <div className="space-y-2 mt-4">
 
                       <p>
                         <span className="font-semibold">
                           Category:
-                        </span>{' '}
+                        </span>{" "}
                         {incident.category}
                       </p>
 
                       <p>
                         <span className="font-semibold">
-                          Reported Incidents:
-                        </span>{' '}
+                          Reports:
+                        </span>{" "}
                         {incident.incidents}
-                      </p>
-
-                      <p>
-                        <span className="font-semibold">
-                          Region:
-                        </span>{' '}
-                        {incident.region}
                       </p>
 
                     </div>
@@ -188,82 +192,84 @@ export default function InteractiveMap() {
                 </Popup>
 
               </CircleMarker>
+
             ))}
 
           </MapContainer>
 
         </div>
 
-        {/* Legend */}
+        {/* LEGEND */}
+
         <div className="flex flex-wrap justify-center gap-6">
 
           <div className="flex items-center gap-3">
-            <div className="size-4 rounded-full bg-[#D9F75A]" />
+            <div className="size-4 rounded-full bg-[#D9F154]" />
             <span className="text-sm text-[#666]">
-              1000+ incidents
+              Very High Activity
             </span>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="size-4 rounded-full bg-[#C9D94A]" />
+            <div className="size-4 rounded-full bg-[#DDE59A]" />
             <span className="text-sm text-[#666]">
-              500-999 incidents
+              High Activity
             </span>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="size-4 rounded-full bg-[#C8C7F7]" />
+            <div className="size-4 rounded-full bg-[#CFCBEA]" />
             <span className="text-sm text-[#666]">
-              100-499 incidents
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="size-4 rounded-full bg-[#D6C5B4]" />
-            <span className="text-sm text-[#666]">
-              50-99 incidents
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="size-4 rounded-full bg-[#B7C0D8]" />
-            <span className="text-sm text-[#666]">
-              &lt;50 incidents
+              Medium Activity
             </span>
           </div>
 
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+        {/* COUNTRY STATS */}
 
-          {incidents.map((region) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+
+          {incidents.map((country, index) => (
+
             <div
-              key={region.id}
-              className="bg-white rounded-3xl p-6 border border-[#ececec] shadow-sm hover:shadow-lg transition"
+              key={index}
+              className="
+                bg-white
+                rounded-3xl
+                p-6
+                border border-[#ececec]
+                shadow-sm
+                hover:shadow-lg
+                transition
+              "
             >
 
               <div
                 className="w-4 h-4 rounded-full mb-4"
                 style={{
-                  backgroundColor: region.color,
+                  backgroundColor: country.color,
                 }}
               />
 
-              <h3 className="text-3xl font-bold">
-                {region.incidents}
+              <h3 className="text-4xl font-bold">
+                {country.incidents}
               </h3>
 
-              <p className="text-[#666] mt-2">
-                {region.region}
+              <p className="text-[#666] mt-2 text-lg">
+                {country.country}
               </p>
 
             </div>
+
           ))}
 
         </div>
 
       </div>
+
     </section>
+
   );
+
 }

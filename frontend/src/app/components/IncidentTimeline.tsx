@@ -17,9 +17,14 @@ export default function IncidentTimeline() {
 
       const data = await getIncidents();
 
-      // MOST RECENT FIRST
-
-      const sorted = [...data].reverse();
+      // MOST RECENT FIRST + ONLY INCIDENTS WITH MATCH
+      const sorted = [...data]
+        .reverse()
+        .filter(
+          (incident) =>
+            incident.Match &&
+            incident.Match.trim() !== ""
+        );
 
       setIncidents(sorted);
 
@@ -46,16 +51,12 @@ export default function IncidentTimeline() {
       <div className="text-center mb-16">
 
         <h2 className="text-6xl font-bold text-black">
-
           Recent Incidents
-
         </h2>
 
         <p className="text-[#666] text-xl mt-5">
-
           A timeline of documented discrimination
           cases across global football
-
         </p>
 
       </div>
@@ -93,9 +94,7 @@ export default function IncidentTimeline() {
               <div className="bg-white/80 rounded-[24px] p-6">
 
                 <h3 className="text-2xl font-bold text-black">
-
-                  {incident.city || "Football Incident"}
-
+                  {incident.Match}
                 </h3>
 
                 <div className="flex items-center gap-2 mt-4 text-[#666]">
@@ -103,9 +102,7 @@ export default function IncidentTimeline() {
                   <MapPin className="size-5" />
 
                   <span className="text-lg">
-
-                    {incident.country}
-
+                    {incident.Country}
                   </span>
 
                 </div>
@@ -125,9 +122,7 @@ export default function IncidentTimeline() {
                 <CalendarDays className="size-5" />
 
                 <span className="text-lg">
-
-                  {incident.date || "Recently reported"}
-
+                  {incident.Date || "Recently reported"}
                 </span>
 
               </div>
@@ -135,8 +130,6 @@ export default function IncidentTimeline() {
               {/* TAGS */}
 
               <div className="flex gap-3 mt-6 flex-wrap">
-
-                {/* CATEGORY */}
 
                 <span className="
                   bg-[#f3efe4]
@@ -146,12 +139,8 @@ export default function IncidentTimeline() {
                   text-sm
                   font-medium
                 ">
-
-                  {incident.category}
-
+                  {incident.Category}
                 </span>
-
-                {/* SEVERITY */}
 
                 <span className={`
                   px-5 py-2
@@ -160,27 +149,21 @@ export default function IncidentTimeline() {
                   font-medium
 
                   ${
-                    incident.severity === "High"
+                    incident.Severity === "High"
                       ? "bg-[#ffe5e5] text-red-500"
-                      : incident.severity === "Medium"
+                      : incident.Severity === "Medium"
                       ? "bg-[#fff7d6] text-[#b59b00]"
                       : "bg-[#e7ffe7] text-green-600"
                   }
                 `}>
-
-                  {incident.severity}
-
+                  {incident.Severity}
                 </span>
 
               </div>
 
-              {/* DESCRIPTION */}
-
               <p className="text-[#666] text-lg leading-relaxed mt-6">
-
-                {incident.description ||
+                {incident.Description ||
                   "New discrimination incident reported through Pulse."}
-
               </p>
 
             </div>
