@@ -6,9 +6,7 @@ import {
 } from "react-leaflet";
 
 import "leaflet/dist/leaflet.css";
-
 import { useEffect, useState } from "react";
-
 import { getIncidents } from "../services/api.js";
 
 const countryCoordinates = {
@@ -36,240 +34,210 @@ const COLORS = [
 ];
 
 export default function InteractiveMap() {
-
   const [incidents, setIncidents] = useState([]);
 
   useEffect(() => {
-
     async function loadData() {
-
       const data = await getIncidents();
 
-      // GROUP BY COUNTRY
       const grouped = {};
 
       data.forEach((item) => {
-
         const country = item.Country;
         const category = item.Category;
 
         if (!country) return;
 
         if (!grouped[country]) {
-
           grouped[country] = {
             country,
             category,
             incidents: 0,
           };
-
         }
 
         grouped[country].incidents += 1;
-
       });
 
       const formatted = Object.values(grouped)
+        .sort((a, b) => b.incidents - a.incidents)
         .map((item, index) => ({
-
           ...item,
-
           position:
-            countryCoordinates[item.country] ||
-            [20, 0],
-
-          color:
-            COLORS[index % COLORS.length],
-
+            countryCoordinates[item.country] || [20, 0],
+          color: COLORS[index % COLORS.length],
         }));
 
       setIncidents(formatted);
-
     }
 
     loadData();
-
   }, []);
 
   return (
-
     <section
       id="analytics"
-      className="py-32 px-6 max-w-[1400px] mx-auto"
+      className="
+        py-10 md:py-24
+        px-4 sm:px-6 lg:px-20
+        max-w-[1400px]
+        mx-auto
+      "
     >
-
-      <div className="space-y-16">
+      <div className="space-y-8 md:space-y-16">
 
         {/* HEADER */}
-
-        <div className="text-center space-y-5">
-
-          <span className="inline-block bg-[#D9F154] text-black px-6 py-2 rounded-full text-sm font-medium">
+        <div className="text-center space-y-3 md:space-y-5">
+          <span className="inline-block bg-[#D9F154] text-black px-4 md:px-6 py-2 rounded-full text-xs md:text-sm font-medium">
             Global Monitoring
           </span>
 
-          <h2 className="text-5xl md:text-6xl font-bold leading-tight">
+          <h2 className="text-3xl md:text-6xl font-bold leading-tight">
             Global Heat Map
           </h2>
 
-          <p className="text-xl text-[#666] max-w-2xl mx-auto">
+          <p className="text-sm md:text-xl text-[#666] max-w-2xl mx-auto leading-relaxed">
             Interactive visualization of discrimination
             incidents across football communities worldwide.
           </p>
-
         </div>
 
         {/* MAP */}
-
-        <div className="bg-white rounded-[3rem] border border-[#ececec] shadow-xl overflow-hidden p-8">
-
+        <div
+          className="
+            bg-white
+            rounded-[24px] md:rounded-[3rem]
+            border border-[#ececec]
+            shadow-xl
+            overflow-hidden
+            p-3 md:p-8
+          "
+        >
           <MapContainer
             center={[20, 0]}
             zoom={2}
             scrollWheelZoom={true}
-            className="h-[700px] w-full rounded-[2rem] z-0"
+            className="h-[320px] md:h-[700px] w-full rounded-[18px] md:rounded-[2rem] z-0"
           >
-
             <TileLayer
               attribution="&copy; OpenStreetMap contributors"
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
             {incidents.map((incident, index) => (
-
               <CircleMarker
                 key={index}
                 center={incident.position}
                 radius={
-                  Math.min(
-                    12 + incident.incidents * 1.5,
-                    35
-                  )
+                  window.innerWidth < 768
+                    ? Math.min(
+                        6 + incident.incidents,
+                        16
+                      )
+                    : Math.min(
+                        12 + incident.incidents * 1.5,
+                        35
+                      )
                 }
                 pathOptions={{
                   color: incident.color,
                   fillColor: incident.color,
                   fillOpacity: 0.85,
-                  weight: 4,
+                  weight: window.innerWidth < 768 ? 2 : 4,
                 }}
               >
-
                 <Popup>
-
-                  <div className="p-2 min-w-[220px]">
-
+                  <div className="p-2 min-w-[160px] md:min-w-[220px]">
                     <div
-                      className="w-4 h-4 rounded-full mb-4"
+                      className="w-4 h-4 rounded-full mb-3"
                       style={{
                         backgroundColor: incident.color,
                       }}
                     />
 
-                    <h3 className="text-2xl font-bold">
+                    <h3 className="text-lg md:text-2xl font-bold">
                       {incident.country}
                     </h3>
 
-                    <div className="space-y-2 mt-4">
-
-                      <p>
+                    <div className="space-y-2 mt-3">
+                      <p className="text-sm md:text-base">
                         <span className="font-semibold">
                           Category:
                         </span>{" "}
                         {incident.category}
                       </p>
 
-                      <p>
+                      <p className="text-sm md:text-base">
                         <span className="font-semibold">
                           Reports:
                         </span>{" "}
                         {incident.incidents}
                       </p>
-
                     </div>
-
                   </div>
-
                 </Popup>
-
               </CircleMarker>
-
             ))}
-
           </MapContainer>
-
         </div>
 
         {/* LEGEND */}
+        <div className="flex flex-wrap justify-center gap-4 md:gap-6">
+          {[
+            ["#D9F154", "Very High Activity"],
+            ["#DDE59A", "High Activity"],
+            ["#CFCBEA", "Medium Activity"],
+          ].map(([color, label], index) => (
+            <div
+              key={index}
+              className="flex items-center gap-2 md:gap-3"
+            >
+              <div
+                className="size-3 md:size-4 rounded-full"
+                style={{ backgroundColor: color }}
+              />
 
-        <div className="flex flex-wrap justify-center gap-6">
-
-          <div className="flex items-center gap-3">
-            <div className="size-4 rounded-full bg-[#D9F154]" />
-            <span className="text-sm text-[#666]">
-              Very High Activity
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="size-4 rounded-full bg-[#DDE59A]" />
-            <span className="text-sm text-[#666]">
-              High Activity
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="size-4 rounded-full bg-[#CFCBEA]" />
-            <span className="text-sm text-[#666]">
-              Medium Activity
-            </span>
-          </div>
-
+              <span className="text-xs md:text-sm text-[#666]">
+                {label}
+              </span>
+            </div>
+          ))}
         </div>
 
         {/* COUNTRY STATS */}
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-
-          {incidents.map((country, index) => (
-
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
+          {incidents.slice(0, 8).map((country, index) => (
             <div
               key={index}
               className="
                 bg-white
-                rounded-3xl
-                p-6
+                rounded-2xl md:rounded-3xl
+                p-4 md:p-6
                 border border-[#ececec]
                 shadow-sm
                 hover:shadow-lg
                 transition
               "
             >
-
               <div
-                className="w-4 h-4 rounded-full mb-4"
+                className="w-3 h-3 md:w-4 md:h-4 rounded-full mb-3 md:mb-4"
                 style={{
                   backgroundColor: country.color,
                 }}
               />
 
-              <h3 className="text-4xl font-bold">
+              <h3 className="text-2xl md:text-4xl font-bold">
                 {country.incidents}
               </h3>
 
-              <p className="text-[#666] mt-2 text-lg">
+              <p className="text-[#666] mt-2 text-xs md:text-lg truncate">
                 {country.country}
               </p>
-
             </div>
-
           ))}
-
         </div>
 
       </div>
-
     </section>
-
   );
-
 }

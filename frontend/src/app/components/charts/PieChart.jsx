@@ -19,131 +19,102 @@ const COLORS = [
 ];
 
 export default function CustomPieChart() {
-
   const [data, setData] = useState([]);
 
   useEffect(() => {
-
     async function loadData() {
-
       const incidents = await getIncidents();
 
       const grouped = {};
 
       incidents.forEach((item) => {
-
         const category = item.Category;
 
-        // SKIP EMPTY VALUES
         if (!category) return;
 
-        if (!grouped[category]) {
-          grouped[category] = 0;
-        }
-
-        // EACH ROW = 1 INCIDENT
-        grouped[category] += 1;
-
+        grouped[category] =
+          (grouped[category] || 0) + 1;
       });
 
-      const formatted = Object.keys(grouped).map(
-        (key) => ({
+      const formatted = Object.keys(grouped)
+        .map((key) => ({
           name: key,
           value: grouped[key],
-        })
-      );
-
-      // SORT DESCENDING
-      formatted.sort(
-        (a, b) => b.value - a.value
-      );
+        }))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 5); // SOLO TOP 5
 
       setData(formatted);
-
     }
 
     loadData();
-
   }, []);
 
   return (
-
-    <section className="py-24 px-8 bg-white">
-
+    <section className="py-10 md:py-24 px-4 md:px-8 bg-white">
       <div className="max-w-6xl mx-auto">
 
-        <div className="mb-12">
-
-          <p className="text-lime-500 text-sm font-semibold uppercase tracking-wider">
+        {/* HEADER */}
+        <div className="mb-6 md:mb-12">
+          <p className="text-lime-500 text-xs md:text-sm font-semibold uppercase tracking-wider">
             Categories
           </p>
 
-          <h2 className="text-5xl font-bold text-black mt-4">
+          <h2 className="text-2xl md:text-5xl font-bold text-black mt-3 md:mt-4">
             Discrimination Types
           </h2>
-
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        {/* LAYOUT */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-12 items-center">
 
+          {/* PIE */}
           <div
             className="
               bg-[#f7f7f4]
-              border border-[#ecece8]
-              rounded-[32px]
-              p-10
-              h-[500px]
+              border
+              border-[#ecece8]
+              rounded-[24px] md:rounded-[32px]
+              p-4 md:p-10
+              h-[260px] md:h-[500px]
               flex
               items-center
               justify-center
             "
           >
-
             <ResponsiveContainer width="100%" height="100%">
-
               <PieChart>
-
                 <Pie
                   data={data}
                   dataKey="value"
                   nameKey="name"
-                  innerRadius={60}
-                  outerRadius={90}
+                  innerRadius={window.innerWidth < 768 ? 35 : 60}
+                  outerRadius={window.innerWidth < 768 ? 60 : 90}
                   paddingAngle={4}
                   cornerRadius={8}
                 >
-
                   {data.map((entry, index) => (
-
                     <Cell
                       key={index}
-                      fill={
-                        COLORS[index % COLORS.length]
-                      }
+                      fill={COLORS[index % COLORS.length]}
                     />
-
                   ))}
-
                 </Pie>
 
                 <Tooltip
                   contentStyle={{
-                    borderRadius: "18px",
+                    borderRadius: "16px",
                     border: "1px solid #ececec",
                     background: "#fff",
                   }}
                 />
-
               </PieChart>
-
             </ResponsiveContainer>
-
           </div>
 
-          <div className="space-y-6">
-
+          {/* LEGEND */}
+          <div className="space-y-3 md:space-y-6">
             {data.map((item, index) => (
-
               <div
                 key={index}
                 className="
@@ -151,45 +122,36 @@ export default function CustomPieChart() {
                   items-center
                   justify-between
                   bg-[#f7f7f4]
-                  border border-[#ecece8]
-                  rounded-[24px]
-                  px-8
-                  py-6
+                  border
+                  border-[#ecece8]
+                  rounded-[20px] md:rounded-[24px]
+                  px-4 md:px-8
+                  py-4 md:py-6
                 "
               >
-
-                <div className="flex items-center gap-5">
-
+                <div className="flex items-center gap-3 md:gap-5">
                   <div
-                    className="w-6 h-6 rounded-full"
+                    className="w-4 h-4 md:w-6 md:h-6 rounded-full"
                     style={{
                       backgroundColor:
                         COLORS[index % COLORS.length],
                     }}
                   />
 
-                  <p className="text-2xl font-semibold text-black">
+                  <p className="text-sm md:text-2xl font-semibold text-black">
                     {item.name}
                   </p>
-
                 </div>
 
-                <p className="text-3xl font-bold text-black">
+                <p className="text-xl md:text-3xl font-bold text-black">
                   {item.value}
                 </p>
-
               </div>
-
             ))}
-
           </div>
 
         </div>
-
       </div>
-
     </section>
-
   );
-
 }

@@ -1,13 +1,15 @@
 // @ts-nocheck
 
 import { useState } from "react";
-
-import { Upload, Send, CheckCircle2 } from "lucide-react";
+import {
+  Upload,
+  Send,
+  CheckCircle2,
+} from "lucide-react";
 
 import { createIncident } from "../services/api.js";
 
 export default function ReportForm() {
-
   const [success, setSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -29,229 +31,169 @@ export default function ReportForm() {
   }
 
   async function handleSubmit(e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
+    try {
+      await createIncident({
+        country: formData.country,
+        city: formData.match,
+        category: formData.category,
+        incidents: 1,
+        severity: formData.severity,
+        description: formData.description,
+      });
 
-    // BACKEND LOCAL
+      await fetch(
+        "https://lucianogrc.app.n8n.cloud/webhook-test/pulse-report",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            match: formData.match,
+            date: formData.date,
+            country: formData.country,
+            category: formData.category,
+            severity: formData.severity,
+            description: formData.description,
+            name: formData.name,
+            email: formData.email,
+          }),
+        }
+      );
 
-    await createIncident({
-      country: formData.country,
-      city: formData.match,
-      category: formData.category,
-      incidents: 1,
-      severity: formData.severity,
-      description: formData.description,
-    });
+      setSuccess(true);
 
-    // N8N WEBHOOK
+      setFormData({
+        match: "",
+        date: "",
+        country: "",
+        category: "",
+        severity: "",
+        description: "",
+        name: "",
+        email: "",
+      });
 
-    await fetch(
-      "https://lucianogrc.app.n8n.cloud/webhook-test/pulse-report",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      setTimeout(() => setSuccess(false), 4000);
 
-        body: JSON.stringify({
-          match: formData.match,
-          date: formData.date,
-          country: formData.country,
-          category: formData.category,
-          severity: formData.severity,
-          description: formData.description,
-          name: formData.name,
-          email: formData.email,
-        }),
-      }
-    );
-
-    // SUCCESS
-
-    setSuccess(true);
-
-    setFormData({
-      match: "",
-      date: "",
-      country: "",
-      category: "",
-      severity: "",
-      description: "",
-      name: "",
-      email: "",
-    });
-
-    setTimeout(() => {
-      setSuccess(false);
-    }, 4000);
-
-  } catch (error) {
-
-    console.error(error);
-
-    alert("Something went wrong while submitting the report.");
-
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong while submitting the report.");
+    }
   }
-}
 
   return (
     <section
       id="contact"
-      className="py-32 px-6 max-w-[950px] mx-auto"
+      className="
+        py-10 md:py-24
+        px-4 sm:px-6 lg:px-20
+        max-w-[1100px]
+        mx-auto
+      "
     >
-
-      <div className="space-y-12">
+      <div className="space-y-8 md:space-y-12">
 
         {/* HEADER */}
-
-        <div className="text-center space-y-5">
-
-          <span className="bg-[#d9ff57] text-black px-5 py-2 rounded-full text-sm font-medium">
+        <div className="text-center space-y-4 md:space-y-5">
+          <span className="bg-[#d9ff57] text-black px-4 md:px-5 py-2 rounded-full text-xs md:text-sm font-medium">
             Community Reporting
           </span>
 
-          <h2 className="text-5xl font-bold">
+          <h2 className="text-3xl md:text-5xl font-bold">
             Report an Incident
           </h2>
 
-          <p className="text-xl text-gray-500 max-w-2xl mx-auto">
+          <p className="text-sm md:text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
             Help Pulse monitor discrimination in football.
-            Your contribution supports awareness, visibility,
-            and safer sports communities worldwide.
+            Your contribution supports awareness and safer sports communities.
           </p>
-
         </div>
 
         {/* FORM */}
-
-        <div className="bg-white rounded-[3rem] p-12 border border-[#ececec] shadow-xl">
-
+        <div
+          className="
+            bg-white
+            rounded-[28px] md:rounded-[3rem]
+            p-5 md:p-12
+            border border-[#ececec]
+            shadow-xl
+          "
+        >
           <form
             onSubmit={handleSubmit}
-            className="space-y-10"
+            className="space-y-6 md:space-y-10"
           >
-
             {/* INCIDENT DETAILS */}
-
-            <div className="space-y-7">
-
-              <h3 className="text-2xl font-semibold">
+            <div className="space-y-5 md:space-y-7">
+              <h3 className="text-xl md:text-2xl font-semibold">
                 Incident Details
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                <Input
+                  label="Match/Event Name"
+                  type="text"
+                  name="match"
+                  value={formData.match}
+                  onChange={handleChange}
+                  placeholder="e.g. AC Milan vs Inter"
+                  required
+                />
 
-                <div className="space-y-3">
-
-                  <label className="text-sm text-gray-500">
-                    Match/Event Name
-                  </label>
-
-                  <input
-                    type="text"
-                    name="match"
-                    value={formData.match}
-                    onChange={handleChange}
-                    placeholder="e.g. AC Milan vs Inter"
-                    className="w-full px-6 py-4 bg-[#fafafa] rounded-2xl border border-[#ececec] outline-none focus:ring-2 focus:ring-[#d9ff57]"
-                    required
-                  />
-
-                </div>
-
-                <div className="space-y-3">
-
-                  <label className="text-sm text-gray-500">
-                    Date of Incident
-                  </label>
-
-                  <input
-                    type="date"
-                    name="date"
-                    value={formData.date}
-                    onChange={handleChange}
-                    className="w-full px-6 py-4 bg-[#fafafa] rounded-2xl border border-[#ececec] outline-none focus:ring-2 focus:ring-[#d9ff57]"
-                    required
-                  />
-
-                </div>
-
+                <Input
+                  label="Date of Incident"
+                  type="date"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleChange}
+                  required
+                />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                <Select
+                  label="Country"
+                  name="country"
+                  value={formData.country}
+                  onChange={handleChange}
+                  options={[
+                    "Italy",
+                    "Spain",
+                    "England",
+                    "Germany",
+                    "France",
+                    "Brazil",
+                    "Mexico",
+                    "Argentina",
+                  ]}
+                />
 
-                <div className="space-y-3">
-
-                  <label className="text-sm text-gray-500">
-                    Country
-                  </label>
-
-                  <select
-                    name="country"
-                    value={formData.country}
-                    onChange={handleChange}
-                    className="w-full px-6 py-4 bg-[#fafafa] rounded-2xl border border-[#ececec] outline-none focus:ring-2 focus:ring-[#d9ff57]"
-                    required
-                  >
-                    <option value="">
-                      Select country
-                    </option>
-
-                    <option>Italy</option>
-                    <option>Spain</option>
-                    <option>England</option>
-                    <option>Germany</option>
-                    <option>France</option>
-                    <option>Brazil</option>
-                    <option>Mexico</option>
-                    <option>Argentina</option>
-
-                  </select>
-
-                </div>
-
-                <div className="space-y-3">
-
-                  <label className="text-sm text-gray-500">
-                    Category
-                  </label>
-
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    className="w-full px-6 py-4 bg-[#fafafa] rounded-2xl border border-[#ececec] outline-none focus:ring-2 focus:ring-[#d9ff57]"
-                    required
-                  >
-                    <option value="">
-                      Select category
-                    </option>
-
-                    <option>Racism</option>
-                    <option>Homophobia</option>
-                    <option>Sexism</option>
-                    <option>Xenophobia</option>
-                    <option>Other</option>
-
-                  </select>
-
-                </div>
-
+                <Select
+                  label="Category"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  options={[
+                    "Racism",
+                    "Homophobia",
+                    "Sexism",
+                    "Xenophobia",
+                    "Other",
+                  ]}
+                />
               </div>
 
               {/* SEVERITY */}
-
-              <div className="space-y-4">
-
+              <div className="space-y-3 md:space-y-4">
                 <label className="text-sm text-gray-500">
                   Severity Level
                 </label>
 
-                <div className="grid grid-cols-3 gap-4">
-
+                <div className="grid grid-cols-3 gap-2 md:gap-4">
                   {["Low", "Medium", "High"].map((level) => (
-
                     <button
                       key={level}
                       type="button"
@@ -261,201 +203,213 @@ export default function ReportForm() {
                           severity: level,
                         })
                       }
-                      className={`px-6 py-4 rounded-2xl border transition-all ${
-                        formData.severity === level
-                          ? "bg-[#d9ff57] border-[#d9ff57] text-black"
-                          : "bg-[#fafafa] border-[#ececec] hover:bg-[#f4f4f4]"
-                      }`}
+                      className={`
+                        px-3 md:px-6
+                        py-3 md:py-4
+                        rounded-2xl
+                        border
+                        transition-all
+                        text-sm md:text-base
+                        ${
+                          formData.severity === level
+                            ? "bg-[#d9ff57] border-[#d9ff57]"
+                            : "bg-[#fafafa] border-[#ececec]"
+                        }
+                      `}
                     >
                       {level}
                     </button>
-
                   ))}
-
                 </div>
-
               </div>
-
             </div>
 
             {/* DESCRIPTION */}
-
             <div className="space-y-3">
-
               <label className="text-sm text-gray-500">
                 Description
               </label>
 
               <textarea
-                rows={6}
+                rows={4}
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                placeholder="Provide a detailed explanation of the incident..."
-                className="w-full px-6 py-4 bg-[#fafafa] rounded-2xl border border-[#ececec] outline-none focus:ring-2 focus:ring-[#d9ff57] resize-none"
+                placeholder="Provide a detailed explanation..."
+                className="w-full px-5 md:px-6 py-4 bg-[#fafafa] rounded-2xl border border-[#ececec] outline-none focus:ring-2 focus:ring-[#d9ff57] resize-none"
                 required
               />
-
             </div>
 
-            {/* FILE UPLOAD */}
-
+            {/* UPLOAD */}
             <div className="space-y-3">
-
               <label className="text-sm text-gray-500">
                 Evidence (Optional)
               </label>
 
-              <div className="border-2 border-dashed border-[#ececec] rounded-[2rem] p-12 text-center hover:border-[#d9ff57] transition-all cursor-pointer bg-[#fafafa]">
-
-                <div className="space-y-5">
-
-                  <div className="size-16 mx-auto rounded-full bg-[#d9ff57]/20 flex items-center justify-center">
-
-                    <Upload className="size-8 text-black" />
-
+              <div
+                className="
+                  border-2 border-dashed border-[#ececec]
+                  rounded-[24px] md:rounded-[2rem]
+                  p-6 md:p-10
+                  text-center
+                  bg-[#fafafa]
+                "
+              >
+                <div className="space-y-4">
+                  <div className="size-12 md:size-16 mx-auto rounded-full bg-[#d9ff57]/20 flex items-center justify-center">
+                    <Upload className="size-6 md:size-8 text-black" />
                   </div>
 
                   <div>
-
-                    <p className="font-semibold mb-2">
-                      Upload files or drag and drop
+                    <p className="font-semibold text-sm md:text-base">
+                      Upload files
                     </p>
 
-                    <p className="text-sm text-gray-500">
-                      Images, videos or documents supported
+                    <p className="text-xs md:text-sm text-gray-500">
+                      Images, videos or documents
                     </p>
-
                   </div>
-
                 </div>
-
               </div>
-
             </div>
 
             {/* CONTACT */}
-
-            <div className="space-y-7">
-
-              <h3 className="text-2xl font-semibold">
+            <div className="space-y-5 md:space-y-7">
+              <h3 className="text-xl md:text-2xl font-semibold">
                 Your Information (Optional)
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                <Input
+                  label="Name"
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Your name"
+                />
 
-                <div className="space-y-3">
-
-                  <label className="text-sm text-gray-500">
-                    Name
-                  </label>
-
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Your name"
-                    className="w-full px-6 py-4 bg-[#fafafa] rounded-2xl border border-[#ececec] outline-none focus:ring-2 focus:ring-[#d9ff57]"
-                  />
-
-                </div>
-
-                <div className="space-y-3">
-
-                  <label className="text-sm text-gray-500">
-                    Email
-                  </label>
-
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="your@email.com"
-                    className="w-full px-6 py-4 bg-[#fafafa] rounded-2xl border border-[#ececec] outline-none focus:ring-2 focus:ring-[#d9ff57]"
-                  />
-
-                </div>
-
+                <Input
+                  label="Email"
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="your@email.com"
+                />
               </div>
 
-              <div className="bg-[#f6f6f0] rounded-2xl p-6 border border-[#ececec]">
-
-                <p className="text-sm text-gray-500">
-                  Your information is optional and will remain confidential.
-                  Pulse may use it only for additional verification if needed.
+              <div className="bg-[#f6f6f0] rounded-2xl p-4 md:p-6 border border-[#ececec]">
+                <p className="text-xs md:text-sm text-gray-500">
+                  Your information is optional and remains confidential.
                 </p>
-
               </div>
-
             </div>
 
-            {/* SUCCESS */}
-
             {success && (
-
-              <div className="bg-[#d9ff57]/20 border border-[#d9ff57]/30 rounded-2xl p-5 flex items-center gap-3">
-
+              <div className="bg-[#d9ff57]/20 border border-[#d9ff57]/30 rounded-2xl p-4 flex items-center gap-3">
                 <CheckCircle2 className="text-black" />
-
-                <p className="text-black">
+                <p className="text-black text-sm md:text-base">
                   Incident report submitted successfully.
                 </p>
-
               </div>
-
             )}
-
-            {/* SUBMIT */}
 
             <button
               type="submit"
-              className="w-full px-8 py-5 bg-black text-white rounded-full hover:scale-[1.01] transition-all flex items-center justify-center gap-3 text-lg font-medium"
+              className="
+                w-full
+                px-8
+                py-4 md:py-5
+                bg-black
+                text-white
+                rounded-full
+                hover:scale-[1.01]
+                transition-all
+                flex
+                items-center
+                justify-center
+                gap-3
+                text-base md:text-lg
+                font-medium
+              "
             >
-
               <Send className="size-5" />
-
               Submit Report
-
             </button>
-
           </form>
-
         </div>
 
-        {/* INFO CARDS */}
+        {/* INFO */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          <InfoCard
+            title="Confidentiality Guaranteed"
+            text="All reports are managed securely and confidentially."
+            bg="bg-[#d9ff57]/10 border-[#d9ff57]/20"
+          />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-          <div className="bg-[#d9ff57]/10 rounded-[2rem] p-8 border border-[#d9ff57]/20">
-
-            <h4 className="font-semibold mb-3">
-              Confidentiality Guaranteed
-            </h4>
-
-            <p className="text-sm text-gray-500 leading-relaxed">
-              All reports are managed with strict confidentiality and secure handling procedures.
-            </p>
-
-          </div>
-
-          <div className="bg-[#f5f5f0] rounded-[2rem] p-8 border border-[#ececec]">
-
-            <h4 className="font-semibold mb-3">
-              Review Process
-            </h4>
-
-            <p className="text-sm text-gray-500 leading-relaxed">
-              Reports are reviewed by the Pulse team within 48 hours and categorized for analysis.
-            </p>
-
-          </div>
-
+          <InfoCard
+            title="Review Process"
+            text="Reports are reviewed by the Pulse team within 48 hours."
+            bg="bg-[#f5f5f0] border-[#ececec]"
+          />
         </div>
 
       </div>
-
     </section>
+  );
+}
+
+function Input(props) {
+  return (
+    <div className="space-y-2 md:space-y-3">
+      <label className="text-sm text-gray-500">
+        {props.label}
+      </label>
+
+      <input
+        {...props}
+        className="w-full px-5 md:px-6 py-4 bg-[#fafafa] rounded-2xl border border-[#ececec] outline-none focus:ring-2 focus:ring-[#d9ff57]"
+      />
+    </div>
+  );
+}
+
+function Select({ label, options, ...props }) {
+  return (
+    <div className="space-y-2 md:space-y-3">
+      <label className="text-sm text-gray-500">
+        {label}
+      </label>
+
+      <select
+        {...props}
+        required
+        className="w-full px-5 md:px-6 py-4 bg-[#fafafa] rounded-2xl border border-[#ececec] outline-none focus:ring-2 focus:ring-[#d9ff57]"
+      >
+        <option value="">Select</option>
+
+        {options.map((item) => (
+          <option key={item}>{item}</option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+function InfoCard({ title, text, bg }) {
+  return (
+    <div
+      className={`${bg} rounded-[24px] md:rounded-[2rem] p-5 md:p-8 border`}
+    >
+      <h4 className="font-semibold mb-2 md:mb-3">
+        {title}
+      </h4>
+
+      <p className="text-sm text-gray-500 leading-relaxed">
+        {text}
+      </p>
+    </div>
   );
 }

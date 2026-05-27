@@ -73,14 +73,12 @@ export default function Dashboard() {
           (groupedCategories[category] || 0) + 1;
       });
 
-      const formattedCategories = Object.keys(groupedCategories).map(
-        (category) => ({
+      setCategoryData(
+        Object.keys(groupedCategories).map((category) => ({
           category,
           value: groupedCategories[category],
-        })
+        }))
       );
-
-      setCategoryData(formattedCategories);
 
       const months = [
         "Jan","Feb","Mar","Apr","May","Jun",
@@ -97,10 +95,12 @@ export default function Dashboard() {
         if (!item.Date) return;
 
         const date = new Date(item.Date);
+
         if (isNaN(date)) return;
 
         const month = months[date.getMonth()];
-        monthlyCounts[month] += 1;
+
+        monthlyCounts[month]++;
       });
 
       setMonthlyData(
@@ -140,31 +140,26 @@ export default function Dashboard() {
     <section
       id="dashboard"
       className="
-        py-16
-        md:py-24
-        px-4
-        sm:px-6
-        lg:px-12
-        xl:px-20
+        py-10 md:py-20
+        px-4 sm:px-6 lg:px-12 xl:px-20
       "
     >
-      <div className="w-full max-w-[1600px] mx-auto">
+      <div className="max-w-[1400px] mx-auto">
 
         {/* HEADER */}
-        <div className="text-center mb-12 md:mb-16">
+        <div className="text-center mb-8 md:mb-14">
           <h2 className="text-3xl md:text-5xl font-bold text-black">
             Data Dashboard
           </h2>
 
-          <p className="text-gray-500 text-base md:text-lg mt-4 max-w-2xl mx-auto">
+          <p className="text-gray-500 text-sm md:text-lg mt-3 max-w-2xl mx-auto">
             Real-time analytics and discrimination insights
             across global football communities.
           </p>
         </div>
 
         {/* STATS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
           {[
             {
               icon: TrendingUp,
@@ -200,25 +195,35 @@ export default function Dashboard() {
             return (
               <div
                 key={index}
-                className="bg-white rounded-[2rem] p-6 border border-[#ececec] shadow-sm hover:shadow-xl transition-all"
+                className="
+                  bg-white
+                  rounded-3xl
+                  p-4 md:p-6
+                  border border-[#ececec]
+                  shadow-sm
+                "
               >
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-3 mb-3">
                   <div
-                    className={`size-11 rounded-full ${card.color} flex items-center justify-center`}
+                    className={`
+                      size-10 rounded-full
+                      ${card.color}
+                      flex items-center justify-center
+                    `}
                   >
-                    <Icon className="size-5 text-black" />
+                    <Icon className="size-4 text-black" />
                   </div>
 
-                  <p className="text-sm text-gray-500">
+                  <p className="text-xs md:text-sm text-gray-500">
                     {card.title}
                   </p>
                 </div>
 
-                <p className="text-4xl font-bold text-black">
+                <p className="text-2xl md:text-4xl font-bold text-black">
                   {card.value}
                 </p>
 
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-xs md:text-sm text-gray-500 mt-2">
                   {card.subtitle}
                 </p>
               </div>
@@ -227,19 +232,19 @@ export default function Dashboard() {
         </div>
 
         {/* CHARTS */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <div className="grid grid-cols-2 gap-4 md:gap-8">
 
           {/* MONTHLY */}
-          <div className="bg-white rounded-[2rem] p-6 md:p-8 border border-[#ececec] shadow-sm">
-            <h3 className="text-2xl font-semibold text-black mb-2">
+          <div className="bg-white rounded-3xl p-4 md:p-8 border border-[#ececec] shadow-sm">
+            <h3 className="text-lg md:text-2xl font-semibold text-black">
               Monthly Trend
             </h3>
 
-            <p className="text-sm text-gray-500 mb-8">
-              Incident reports over the year
+            <p className="text-xs md:text-sm text-gray-500 mb-4 md:mb-8">
+              Incident reports
             </p>
 
-            <ResponsiveContainer width="100%" height={320}>
+            <ResponsiveContainer width="100%" height={160}>
               <AreaChart data={monthlyData}>
                 <defs>
                   <linearGradient id="colorIncidents">
@@ -249,8 +254,8 @@ export default function Dashboard() {
                 </defs>
 
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f1f1" />
-                <XAxis dataKey="month" />
-                <YAxis />
+                <XAxis tick={{ fontSize: 8 }} dataKey="month" />
+                <YAxis tick={{ fontSize: 8 }} />
                 <Tooltip />
 
                 <Area
@@ -265,23 +270,23 @@ export default function Dashboard() {
           </div>
 
           {/* TOP COUNTRIES */}
-          <div className="bg-white rounded-[2rem] p-6 md:p-8 border border-[#ececec] shadow-sm">
-            <h3 className="text-2xl font-semibold text-black mb-2">
+          <div className="bg-white rounded-3xl p-4 md:p-8 border border-[#ececec] shadow-sm">
+            <h3 className="text-lg md:text-2xl font-semibold text-black">
               Top Countries
             </h3>
 
-            <p className="text-sm text-gray-500 mb-8">
-              Most reported incidents
+            <p className="text-xs md:text-sm text-gray-500 mb-4 md:mb-8">
+              Most incidents
             </p>
 
-            <ResponsiveContainer width="100%" height={320}>
+            <ResponsiveContainer width="100%" height={160}>
               <BarChart data={topCountries}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f1f1" />
-                <XAxis dataKey="country" />
-                <YAxis />
+                <XAxis tick={{ fontSize: 8 }} dataKey="country" />
+                <YAxis tick={{ fontSize: 8 }} />
                 <Tooltip />
 
-                <Bar dataKey="incidents" radius={[12, 12, 0, 0]}>
+                <Bar dataKey="incidents" radius={[10, 10, 0, 0]}>
                   {topCountries.map((entry, index) => (
                     <Cell
                       key={index}
@@ -294,20 +299,20 @@ export default function Dashboard() {
           </div>
 
           {/* CATEGORY */}
-          <div className="bg-white rounded-[2rem] p-6 md:p-8 border border-[#ececec] shadow-sm xl:col-span-2">
-            <h3 className="text-2xl font-semibold text-black mb-2">
+          <div className="col-span-2 bg-white rounded-3xl p-4 md:p-8 border border-[#ececec] shadow-sm">
+            <h3 className="text-lg md:text-2xl font-semibold text-black">
               Incident Categories
             </h3>
 
-            <p className="text-sm text-gray-500 mb-8">
-              Distribution by discrimination type
+            <p className="text-xs md:text-sm text-gray-500 mb-4 md:mb-8">
+              Distribution by type
             </p>
 
-            <ResponsiveContainer width="100%" height={350}>
+            <ResponsiveContainer width="100%" height={220}>
               <LineChart data={categoryData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f1f1" />
-                <XAxis dataKey="category" />
-                <YAxis />
+                <XAxis tick={{ fontSize: 9 }} dataKey="category" />
+                <YAxis tick={{ fontSize: 9 }} />
                 <Tooltip />
 
                 <Line
@@ -315,10 +320,7 @@ export default function Dashboard() {
                   dataKey="value"
                   stroke="#d9ff57"
                   strokeWidth={4}
-                  dot={{
-                    r: 5,
-                    fill: "#d9ff57",
-                  }}
+                  dot={{ r: 4, fill: "#d9ff57" }}
                 />
               </LineChart>
             </ResponsiveContainer>
